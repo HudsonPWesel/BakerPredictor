@@ -12,3 +12,18 @@ Weight 14 --> 0 13
 2. Which week baker 1 (14), baker 2 (12), baker 11 (8), and baker 12 (6), are expected to be eliminated in the long run = (the average of all of the weeks in which they are eliminated)
 
 3. How likely the differently weighted bakers (14, 12, 8, 6) are to make it to the final three/how likely they are to win.
+
+
+
+
+[0 - 120], if randomly selected num is chosen --> rank is chosen (based on sequential order)
+
+- Use chars 
+cumulative rank (of three challenges) determines score
+
+baker with highest score will be eliminated
+
+in the event of a tie --> randomly selected baker eliminated || rerun entire siulation
+
+Use index vals to associate rank value
+

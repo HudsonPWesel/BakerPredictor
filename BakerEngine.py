@@ -102,6 +102,7 @@ def display_DataFrame():
     print(
         pd.DataFrame({"Bakers": list(baker_wins.keys()), 
                       "Wins": list(baker_wins.values()), "Win-Percentages": win_percentages,
+                      # Num times eliminated in specified week
                       str(list(week_elim_count[0].keys())[0]): list(week_elim_count[0].values())[0],
                       str(list(week_elim_count[1].keys())[0]): list(week_elim_count[1].values())[0],
                       str(list(week_elim_count[2].keys())[0]): list(week_elim_count[3].values())[0],
