@@ -41,7 +41,7 @@ def intialize_data(baker_list):
     
 
 def pickVal(weight):
-    return np.random.randint(0, weight)
+    return np.random.randint(0, weight)    
 
 
 def resetScores(baker_list_copy):
@@ -89,21 +89,31 @@ def calc_win_percentile(baker_list, num_epochs):
     # baker.probability = baker_wins[baker.name]
 
 
-
-        
 def display_DataFrame():
+
     # DYNAMICALLY MAKE ELIM COUNT
     # print(week_elim_count)[0]
     # print(str(list(week_elim_count[0].keys())[0]))    
     # print(list(week_elim_count[0].values()))
-    print(str(list(week_elim_count[0].keys())[0]))
-    print(list(week_elim_count[0].values())[0])
-    print()
+    # str(list(week_elim_count[0].keys())[0]): list(week_elim_count[0].values())[0]
+    print(week_elim_count[1])
+
 
     print(
         pd.DataFrame({"Bakers": list(baker_wins.keys()), 
                       "Wins": list(baker_wins.values()), "Win-Percentages": win_percentages,
                       str(list(week_elim_count[0].keys())[0]): list(week_elim_count[0].values())[0],
+                      str(list(week_elim_count[1].keys())[0]): list(week_elim_count[1].values())[0],
+                      str(list(week_elim_count[2].keys())[0]): list(week_elim_count[3].values())[0],
+                      str(list(week_elim_count[3].keys())[0]): list(week_elim_count[3].values())[0],
+                      str(list(week_elim_count[4].keys())[0]): list(week_elim_count[4].values())[0],
+                      str(list(week_elim_count[5].keys())[0]): list(week_elim_count[5].values())[0],
+                      str(list(week_elim_count[6].keys())[0]): list(week_elim_count[6].values())[0],
+                      str(list(week_elim_count[7].keys())[0]): list(week_elim_count[7].values())[0],
+                      str(list(week_elim_count[8].keys())[0]): list(week_elim_count[8].values())[0],
+                      str(list(week_elim_count[9].keys())[0]): list(week_elim_count[9].values())[0],
+                      str(list(week_elim_count[10].keys())[0]): list(week_elim_count[10].values())[0],
+                      str(list(week_elim_count[11].keys())[0]): list(week_elim_count[11].values())[0],
                      }
             ),
     )
