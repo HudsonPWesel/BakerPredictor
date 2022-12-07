@@ -15,6 +15,8 @@ Weight 14 --> 0 13
 
 
 
+Weights 
+the weights of all the bakers would be added up, and each baker's probability of winning would be their weight divided by the sum of all the weights for that round
 
 [0 - 120], if randomly selected num is chosen --> rank is chosen (based on sequential order)
 
