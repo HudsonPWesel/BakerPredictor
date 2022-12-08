@@ -169,7 +169,7 @@ def display_DataFrame():
     # "Wins": list(baker_wins.values()),
     # Avg week baker is eliminated
     #   Weeks Eliminated
-
+    print("LAST THREE CONTESTENTS ARE NOT ACCOUNTED FOR BECAUSE THEIR WINS WERE AT THE FINAL THREE AND HAVE NOT BEEN IMPLEMENTED YET!!!")
     print(
         pd.DataFrame({
                      "Weights": list(BAKER_WEIGHTS),
