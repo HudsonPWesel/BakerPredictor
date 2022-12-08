@@ -1,3 +1,4 @@
+from typing import Any
 
 from Baker import Baker
 # import pandas as pd
@@ -7,21 +8,20 @@ from Baker import Baker
 # For Data Formating
 import pandas as pd
 import numpy as np
-
+weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
+         "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", ]
 # Global Variables
 baker_wins = {"Baker 1": 0, "Baker 2": 0, "Baker 3": 0, "Baker 4": 0,
               "Baker 5": 0, "Baker 6": 0, "Baker 7": 0, "Baker 8": 0,
               "Baker 9": 0, "Baker 10": 0, "Baker 11": 0, "Baker 12": 0}
 char_arr = []   # Chars for each round
 baker_list = []  # List of baker objects
-
-
+week_vals = []  # List of vals for each week
 # CONSTANTS
 BAKER_RANKS = (14, 12, 10, 10, 10, 10, 10, 10, 10, 10, 8,
                6)         # Weights if each baker in order
 CHARS = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
          'K', 'L')  # Bakers corresponding letter in order
-DATA = pd.DataFrame()
 
 
 def fill_char_arr():
@@ -59,7 +59,7 @@ def assign_rank(chosen_char, current_rank,):
 
 
 def find_range() -> int:
-    """Find the range of the bakers by adding up all the bakers weigt"""
+    """Find the range of the bakers by adding up all the bakers weight"""
     total = 0
     for baker in baker_list_copy:
         total += baker.weight
@@ -74,18 +74,37 @@ def calc_scores(scores):
 
 
 def eliminate_baker(current_week, scores):
-    # TODO: Problem: After the baker is eliminated, we cant use that baker to display in DF
+    # TODO: Problem: After the baker is eliminated, we cant use that baker to display in DF - EASY FIX!
+
+   # print("MAX: " + str(max(scores)))
+   # for baker in baker_list_copy:
+   #     print(str(baker.name) + " " + str(baker.cumulative_score))
+
     for baker in baker_list_copy:
         if baker.cumulative_score == max(scores):
+            # print("FOUND: " + str(baker.name))
+            real_baker = get_baker(baker)
+            if real_baker is None:
+                pass
+            # print("FOUND REAL: " + str(real_baker.name))
+            real_baker.weeks_eliminated["Week " + (str(current_week + 1))] += 1
             baker_list_copy.remove(baker)
-            baker.weeks_eliminated["Week " + (str(current_week + 1))] += 1
-        print(baker.weeks_eliminated)
 
-    print("Remaining Bakers" + (str(len(baker_list_copy))))
+    # print(baker_list[0].weeks_eliminated)
+
+    # print("Remaining Bakers" + (str(len(baker_list_copy))))
+
+
+def get_baker(baker: Baker):
+    # print(baker)
+    for b in baker_list:
+        if b.name is baker.name:
+            return b
+    return None
 
 
 def reset_baker_scores():
-    for baker in baker_list_copy:
+    for baker in baker_list:
         baker.cumulative_ranks = []
 
 
@@ -97,6 +116,7 @@ def simulate():
     baker_list_copy = baker_list.copy()
 
     # RUNS UP TO FINAL 3
+    # todo DO WHAT IS NEEDED FOR FINAL THREE
     for week in range(9):
         # Runs three times to simulate the three challenges each week
         reset_baker_scores()  # Reset cumulative ranks
@@ -110,9 +130,40 @@ def simulate():
         scores = []
 
 
+def get_data():
+    global all_week_vals
+    all_week_vals = [[], [], [], [], [], [], [], [], [], [], [], []]
+    for i in range(0, 12):
+        for baker in baker_list:
+            all_week_vals[i].append(
+                baker.weeks_eliminated["Week " + (str(i + 1))])
+
+  #  print(all_week_vals)
+    # return temp_week_vals
+
+
 def display_DataFrame():
     """Display the final data for each simulation"""
-    print(pd.DataFrame({"Bakers": list(baker_wins.keys())}))
+    for week in weeks:
+        get_data()
+
+    print(
+        pd.DataFrame({"Bakers": list(baker_wins.keys()),
+                      #   Weeks Eliminated
+                      str(list(baker_list[0].weeks_eliminated.keys())[0]):  all_week_vals[0],
+                      str(list(baker_list[1].weeks_eliminated.keys())[1]):  all_week_vals[1],
+                      str(list(baker_list[2].weeks_eliminated.keys())[2]):  all_week_vals[2],
+                      str(list(baker_list[3].weeks_eliminated.keys())[3]):  all_week_vals[3],
+                      str(list(baker_list[4].weeks_eliminated.keys())[4]):  all_week_vals[4],
+                      str(list(baker_list[5].weeks_eliminated.keys())[5]):  all_week_vals[5],
+                      str(list(baker_list[6].weeks_eliminated.keys())[6]):  all_week_vals[6],
+                      str(list(baker_list[7].weeks_eliminated.keys())[7]):  all_week_vals[7],
+                      str(list(baker_list[8].weeks_eliminated.keys())[8]):  all_week_vals[8],
+                      str(list(baker_list[9].weeks_eliminated.keys())[9]):  all_week_vals[9],
+                      str(list(baker_list[10].weeks_eliminated.keys())[10]):  all_week_vals[10],
+                      str(list(baker_list[11].weeks_eliminated.keys())[11]):  all_week_vals[11],
+                      })
+    )
 
 
 def main():
@@ -140,8 +191,7 @@ def run(epochs: int):
         simulate()
 
     # Display data for all the simulations
-
-    # display_DataFrame()
+    display_DataFrame()
 
 
 if __name__ == '__main__':
