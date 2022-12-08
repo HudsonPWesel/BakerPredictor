@@ -8,8 +8,8 @@ from Baker import Baker
 # For Data Formating
 import pandas as pd
 import numpy as np
-weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
-         "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", ]
+# weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
+#          "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", ]
 # Global Variables
 baker_wins = {"Baker 1": 0, "Baker 2": 0, "Baker 3": 0, "Baker 4": 0,
               "Baker 5": 0, "Baker 6": 0, "Baker 7": 0, "Baker 8": 0,
@@ -23,6 +23,11 @@ BAKER_RANKS = (14, 12, 10, 10, 10, 10, 10, 10, 10, 10, 8,
 CHARS = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
          'K', 'L')  # Bakers corresponding letter in order
 
+
+def set_num_wins():
+    for baker in baker_list:
+        # baker.name -> tuple (e.g) ('Baker 1',) --> Must index tuple
+        baker_wins[baker.name[0]] = baker.win_count
 
 def fill_char_arr():
     """Fill list of chars determined by the weight of each baker"""
@@ -128,12 +133,17 @@ def simulate():
         # Eliminate baker with max score of scores
         eliminate_baker(week, scores)
         scores = []
+    baker_list_copy[0].win_count += 1
+
+#     FINAL Three
+
+
 
 
 def get_data():
     global all_week_vals
     all_week_vals = [[], [], [], [], [], [], [], [], [], [], [], []]
-    for i in range(0, 12):
+    for i in range(0, 9):
         for baker in baker_list:
             all_week_vals[i].append(
                 baker.weeks_eliminated["Week " + (str(i + 1))])
@@ -141,15 +151,24 @@ def get_data():
   #  print(all_week_vals)
     # return temp_week_vals
 
+def simulate_final_round():
+    print()
 
 def display_DataFrame():
     """Display the final data for each simulation"""
-    for week in weeks:
+    print(list(baker_wins.keys()))
+    for week in range(12):
         get_data()
+    # {"Bakers": list(baker_wins.keys()),
+    # Number of wins per bakers
+    # "Wins": list(baker_wins.values()),
+    # Avg week baker is eliminated
+    #   Weeks Eliminated
 
     print(
-        pd.DataFrame({"Bakers": list(baker_wins.keys()),
-                      #   Weeks Eliminated
+        pd.DataFrame({
+                     "Bakers": list(baker_wins.keys()),
+                       "Wins": list(baker_wins.values()),
                       str(list(baker_list[0].weeks_eliminated.keys())[0]):  all_week_vals[0],
                       str(list(baker_list[1].weeks_eliminated.keys())[1]):  all_week_vals[1],
                       str(list(baker_list[2].weeks_eliminated.keys())[2]):  all_week_vals[2],
@@ -159,9 +178,7 @@ def display_DataFrame():
                       str(list(baker_list[6].weeks_eliminated.keys())[6]):  all_week_vals[6],
                       str(list(baker_list[7].weeks_eliminated.keys())[7]):  all_week_vals[7],
                       str(list(baker_list[8].weeks_eliminated.keys())[8]):  all_week_vals[8],
-                      str(list(baker_list[9].weeks_eliminated.keys())[9]):  all_week_vals[9],
-                      str(list(baker_list[10].weeks_eliminated.keys())[10]):  all_week_vals[10],
-                      str(list(baker_list[11].weeks_eliminated.keys())[11]):  all_week_vals[11],
+
                       })
     )
 
@@ -189,6 +206,7 @@ def run(epochs: int):
         print(str(i) + " | " + "{:.2f}".format((i/epochs)*100) + "%")
         # Run one simulation (Saves output globally)
         simulate()
+    set_num_wins()
 
     # Display data for all the simulations
     display_DataFrame()
