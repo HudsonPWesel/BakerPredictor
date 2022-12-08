@@ -17,17 +17,23 @@ baker_wins = {"Baker 1": 0, "Baker 2": 0, "Baker 3": 0, "Baker 4": 0,
 char_arr = []   # Chars for each round
 baker_list = []  # List of baker objects
 week_vals = []  # List of vals for each week
+baker_win_percentages = [] # Win percentages of bakers
 # CONSTANTS
-BAKER_RANKS = (14, 12, 10, 10, 10, 10, 10, 10, 10, 10, 8,
+BAKER_WEIGHTS = (14, 12, 10, 10, 10, 10, 10, 10, 10, 10, 8,
                6)         # Weights if each baker in order
 CHARS = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
          'K', 'L')  # Bakers corresponding letter in order
 
 
-def set_num_wins():
+def set_wins(num_epochs:int):
     for baker in baker_list:
-        # baker.name -> tuple (e.g) ('Baker 1',) --> Must index tuple
+        # SET NUMBER OF WINS
+            # baker.name -> tuple (e.g) ('Baker 1',) --> Must index tuple
         baker_wins[baker.name[0]] = baker.win_count
+
+        # SET WIN PERCENTAGES
+        baker_win_percentages.append(round((baker_wins[baker.name[0]] / num_epochs) * 100, 3))
+
 
 def fill_char_arr():
     """Fill list of chars determined by the weight of each baker"""
@@ -35,7 +41,6 @@ def fill_char_arr():
     for baker in baker_list_copy:
         for i in range(baker.weight):
             char_arr.append(baker.char)
-
 
 def set_baker_scores():
     """Find winner of each challenge (Three for each baker removal)"""
@@ -167,8 +172,10 @@ def display_DataFrame():
 
     print(
         pd.DataFrame({
+                     "Weights": list(BAKER_WEIGHTS),
                      "Bakers": list(baker_wins.keys()),
-                       "Wins": list(baker_wins.values()),
+                      "Wins": list(baker_wins.values()),
+                      "Win-Percentage": baker_win_percentages,
                       str(list(baker_list[0].weeks_eliminated.keys())[0]):  all_week_vals[0],
                       str(list(baker_list[1].weeks_eliminated.keys())[1]):  all_week_vals[1],
                       str(list(baker_list[2].weeks_eliminated.keys())[2]):  all_week_vals[2],
@@ -198,7 +205,7 @@ def run(epochs: int):
     # Initialze Baker Objects
     for i in range(12):
         baker_list.append(
-            Baker(BAKER_RANKS[i], ("Baker " + str(i + 1), ), CHARS[i]))
+            Baker(BAKER_WEIGHTS[i], ("Baker " + str(i + 1), ), CHARS[i]))
 
     # Run each Simulation
     for i in range(1, epochs+1):
@@ -206,7 +213,7 @@ def run(epochs: int):
         print(str(i) + " | " + "{:.2f}".format((i/epochs)*100) + "%")
         # Run one simulation (Saves output globally)
         simulate()
-    set_num_wins()
+    set_wins(epochs)
 
     # Display data for all the simulations
     display_DataFrame()
@@ -316,7 +323,8 @@ if __name__ == '__main__':
 #
 #    print(
 #         pd.DataFrame({"Bakers": list(baker_wins.keys()),
-#                       "Wins": list(baker_wins.values()), "Win-Percentages": win_percentages,
+#                       "Wins": list(baker_wins.values()),
+#                       "Win-Percentages": win_percentages,
 #                       # Num times eliminated in specified week
 #                       str(list(week_elim_count[0].keys())[0]): list(week_elim_count[0].values())[0],
 #                       str(list(week_elim_count[1].keys())[0]): list(week_elim_count[1].values())[0],
