@@ -116,6 +116,26 @@ def get_baker(baker: Baker):
 def reset_baker_scores():
     for baker in baker_list:
         baker.cumulative_ranks = []
+def simulate_challenges(scores):
+    for challenge in range(3):
+        # Reset arr for each challenge
+        fill_char_arr()  # Fills with 120 chars based on weight
+        set_baker_scores()
+        calc_scores(scores)  # Calculate cumulative score
+
+def simulate_round(week, scores):
+    simulate_challenges(scores) # Simulate 3 Challenges
+    # Eliminate baker with max score of scores
+    eliminate_baker(week, scores)
+    for baker in baker_list_copy:
+        baker.cumulative_score = 0
+        baker.cumulative_ranks = []
+
+def simulate_final_round(week, scores:list):
+    simulate_challenges(scores)
+
+    for baker in baker_list_copy:
+        print(baker.cumulative_score)
 
 
 def simulate():
@@ -130,20 +150,15 @@ def simulate():
     for week in range(9):
         # Runs three times to simulate the three challenges each week
         reset_baker_scores()  # Reset cumulative ranks
-        for challenge in range(3):
-            # Reset arr for each challenge
-            fill_char_arr()  # Fills with 120 chars based on weight
-            set_baker_scores()
-        calc_scores(scores)  # Calculate cumulative score
-        # Eliminate baker with max score of scores
-        eliminate_baker(week, scores)
+        simulate_round(week, scores)
         scores = []
+
+    # Simulate FINAL ROUND
+    simulate_final_round(10, scores)
+    # week 1 11 | 2 10 | 3 9 | 4 8 | 5 7 | 6 6 | 7 5 | 8 4 | 9 3 | 10
+
+
     baker_list_copy[0].win_count += 1
-
-#     FINAL Three
-
-
-
 
 def get_data():
     global all_week_vals
@@ -155,9 +170,6 @@ def get_data():
 
   #  print(all_week_vals)
     # return temp_week_vals
-
-def simulate_final_round():
-    print()
 
 def display_DataFrame():
     """Display the final data for each simulation"""
