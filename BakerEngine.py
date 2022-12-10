@@ -131,11 +131,31 @@ def simulate_round(week, scores):
         baker.cumulative_score = 0
         baker.cumulative_ranks = []
 
-def simulate_final_round(week, scores:list):
+def simulate_final_round(scores:list):
     simulate_challenges(scores)
+    third_place_baker = None;
 
     for baker in baker_list_copy:
-        print(baker.cumulative_score)
+        # Get real baker in our main list
+        real_baker = get_baker(baker)
+        real_baker.final_three += 1
+        print(len(baker_list_copy) > 1)
+
+        if(len(baker_list_copy)) > 1:
+            if real_baker is None:
+                pass
+            if baker.cumulative_score == max(scores):
+                # Is This Round For Third Place?
+                if(len(baker_list_copy)) > 2:
+                    real_baker.third_place += 1
+                else:
+                    real_baker.second_place += 1
+        else:
+            # The Winner! (need to use else otherwise final_three will be added twice per baker)
+            real_baker.first_place += 1
+        # Eliminate Current Baker
+        print("OEIWFJIJEWOIF")
+        baker_list_copy.remove(real_baker)
 
 
 def simulate():
@@ -154,7 +174,7 @@ def simulate():
         scores = []
 
     # Simulate FINAL ROUND
-    simulate_final_round(10, scores)
+    simulate_final_round(scores)
     # week 1 11 | 2 10 | 3 9 | 4 8 | 5 7 | 6 6 | 7 5 | 8 4 | 9 3 | 10
 
 
@@ -167,6 +187,16 @@ def get_data():
         for baker in baker_list:
             all_week_vals[i].append(
                 baker.weeks_eliminated["Week " + (str(i + 1))])
+
+    global third_place_vals, second_place_vals, final_three_vals
+    third_place_vals= []
+    second_place_vals = []
+    final_three_vals = []
+
+    for baker in baker_list:
+        third_place_vals.append(baker.third_place)
+        second_place_vals.append(baker.second_place)
+        final_three_vals.append(baker.final_three)
 
   #  print(all_week_vals)
     # return temp_week_vals
@@ -186,7 +216,6 @@ def display_DataFrame():
         pd.DataFrame({
                      "Weights": list(BAKER_WEIGHTS),
                      "Bakers": list(baker_wins.keys()),
-                      "Wins": list(baker_wins.values()),
                       "Win-Percentage": baker_win_percentages,
                       str(list(baker_list[0].weeks_eliminated.keys())[0]):  all_week_vals[0],
                       str(list(baker_list[1].weeks_eliminated.keys())[1]):  all_week_vals[1],
@@ -197,8 +226,12 @@ def display_DataFrame():
                       str(list(baker_list[6].weeks_eliminated.keys())[6]):  all_week_vals[6],
                       str(list(baker_list[7].weeks_eliminated.keys())[7]):  all_week_vals[7],
                       str(list(baker_list[8].weeks_eliminated.keys())[8]):  all_week_vals[8],
+                      "3rd Place Finish": third_place_vals,
+                      "2nd Place Finish": second_place_vals,
+                      "1st Place Finish": list(baker_wins.values()),
+                      "Final Three": final_three_vals,
 
-                      })
+        })
     )
 
 
