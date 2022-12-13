@@ -19,6 +19,7 @@ baker_list = []  # List of baker objects
 week_vals = []  # List of vals for each week
 scores = []
 baker_win_percentages = []  # Win percentages of bakers
+baker_total_scores = []
 # CONSTANTS
 BAKER_WEIGHTS = (14, 12, 10, 10, 10, 10, 10, 10, 10, 10, 8,
                  6)         # Weights if each baker in order
@@ -46,6 +47,7 @@ def fill_char_arr():
 
 
 def set_baker_scores():
+    baker_total_scores.clear()
     """Find winner of each challenge (Three for each baker removal)"""
     global char_arr
     # Rank is place per challenge (1st, 2nd, 3rd, etc. places)
@@ -64,11 +66,11 @@ def set_baker_scores():
         assign_rank(chosen_char, i)
 
 
-def calc_scores(scores):
+def calc_scores():
     for baker in baker_list_copy:
         for score in baker.cumulative_ranks:
             baker.cumulative_score += score
-        scores.append(baker.cumulative_score)
+        baker_total_scores.append(baker.cumulative_score)
     # print(scores)
 
 
@@ -88,17 +90,14 @@ def find_range() -> int:
     return total - 1
 
 
-def eliminate_baker(current_week, scores):
+def eliminate_baker(current_week):
     # TODO: Problem: After the baker is eliminated, we cant use that baker to display in DF - EASY FIX!
 
-   # print("MAX: " + str(max(scores)))
-   # for baker in baker_list_copy:
-   #     print(str(baker.name) + " " + str(baker.cumulative_score))
-
     for baker in baker_list_copy:
-        if baker.cumulative_score == max(scores):
+        if baker.cumulative_score == max(baker_total_scores):
             # print("FOUND: " + str(baker.name))
             real_baker = get_baker(baker)
+            print(real_baker)
             if real_baker is None:
                 pass
             # print("FOUND REAL: " + str(real_baker.name))
@@ -124,30 +123,32 @@ def reset_baker_scores():
         baker.cumulative_score = 0
 
 
-def simulate_challenges(scores):
+def simulate_challenges():
     for challenge in range(3):
         # Reset arr for each challenge
         fill_char_arr()  # Fills with 120 chars based on weight
         set_baker_scores()
+        calc_scores()  # Calculate cumulative score
 
-        calc_scores(scores)  # Calculate cumulative score
 
-
-def simulate_round(week, scores):
-    simulate_challenges(scores)  # Simulate 3 Challenges
+def simulate_round(week):
+    simulate_challenges()  # Simulate 3 Challenges
     # Eliminate baker with max score of scores
-    eliminate_baker(week, scores)
+    eliminate_baker(week)
     for baker in baker_list_copy:
         baker.cumulative_score = 0
         baker.cumulative_ranks = []
 
 
-def simulate_final_round(scores: list):
-    print(len(baker_list_copy))
-    simulate_challenges(scores)
-    # print(str(scores.clear()))
-    third_place_baker = None
+def simulate_final_round():
 
+    simulate_challenges()
+    third_place_baker = None
+    temp_baker_list_copy = baker_list_copy.copy()
+
+    print("CURRENT LENGTH: " + str(len(temp_baker_list_copy)))
+
+    # print(str(scores.clear()))
     for baker in baker_list_copy:
         # Get real baker in our main list
         real_baker = get_baker(baker)
@@ -156,17 +157,20 @@ def simulate_final_round(scores: list):
         if(len(baker_list_copy)) > 1:
             if real_baker is None:
                 pass
-            if baker.cumulative_score == max(scores):
+            # print(baker_total_scores)
+            if baker.cumulative_score == max(baker_total_scores):
                 # Is This Round For Third Place?
                 if(len(baker_list_copy)) > 2:
                     real_baker.third_place += 1
+                    temp_baker_list_copy.remove(baker)
                 else:
                     real_baker.second_place += 1
+                    temp_baker_list_copy.remove(baker)
+                    print(len(temp_baker_list_copy))
 
-        elif(len(baker_list_copy)) == 1:
-            print("WINNNG BAKER")
+        elif(len(temp_baker_list_copy)) == 1:
+            print(real_baker.name)
             real_baker.win_count += 1
-    scores.clear()
 
 
 def simulate():
@@ -179,10 +183,10 @@ def simulate():
     for week in range(9):
         # Runs three times to simulate the three challenges each week
         reset_baker_scores()  # Reset cumulative ranks
-        simulate_round(week, scores)
+        simulate_round(week)
 
-    simulate_final_round(scores)
-    scores.clear()
+    simulate_final_round()
+
     # print("OIEUFWHOIEHJFOIJEWFOIFJE")
     # print(scores)
 
@@ -190,7 +194,7 @@ def simulate():
 
     # week 1 11 | 2 10 | 3 9 | 4 8 | 5 7 | 6 6 | 7 5 | 8 4 | 9 3 | 10
 
-    baker_list_copy[0].win_count += 1
+    # baker_list_copy[0].win_count += 1
 
 
 def get_data():
