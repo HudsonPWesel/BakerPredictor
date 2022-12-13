@@ -13,7 +13,6 @@ class Baker:
         self.avg_week_eliminated = 0
         self.weeks_eliminated = {"Week 1": 0, "Week 2": 0, "Week 3": 0, "Week 4": 0, "Week 5": 0,
                                  "Week 6": 0, "Week 7": 0, "Week 8": 0, "Week 9": 0}
-        self.first_place = 0
         self.second_place = 0
         self.third_place = 0
 
