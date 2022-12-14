@@ -47,6 +47,7 @@ def fill_char_arr():
     for baker in baker_list_copy:
         for i in range(baker.weight):
             char_arr.append(baker.char)
+    # print(len(char_arr))
 
 
 def reset_baker_scores():
@@ -78,7 +79,6 @@ def set_baker_scores():
 def assign_rank(chosen_char, current_rank,):
     """Assign a rank to each baker in the baker Object"""
     for baker in baker_list_copy:
-
         if baker.char == chosen_char:
             baker.cumulative_ranks.append(current_rank)
 
@@ -95,11 +95,10 @@ def simulate_challenges():
         # Reset arr for each challenge
         fill_char_arr()  # Fills with 120 chars based on weight
         set_baker_scores()
-        calc_scores()  # Calculate cumulative score
+    calc_scores()  # Calculate cumulative score
 
 
 def get_baker(baker: Baker):
-
     for b in baker_list:
         if b.name is baker.name:
             return b
@@ -108,15 +107,19 @@ def get_baker(baker: Baker):
 
 def eliminate_baker(current_week):
     for baker in baker_list_copy:
+
         # If the MAX is at certain POS then it will edit the list
         if baker.cumulative_score == max(baker_total_scores):
             real_baker = get_baker(baker)
+
             if real_baker is None:
                 pass
+
             real_baker.weeks_eliminated["Week " + (str(current_week + 1))] += 1
             baker_list_copy.remove(baker)
+
+            # Drop out of function so that we don't eliminate any more bakers
             return
-            # print("BAKER ELIMINATED")
 
 
 def simulate_round(week):
@@ -133,18 +136,24 @@ def set_real_baker(temp_baker, real_bakers):
 
 
 def remove_max_baker(real_bakers):
+    # print(baker_list_copy)
     for baker in baker_list_copy:
         if baker.cumulative_score == max(baker_total_scores):
             real_baker = set_real_baker(baker, real_bakers)
+
             if(len(baker_total_scores) == 3):
                 real_baker.third_place += 1
                 baker_total_scores.remove(max(baker_total_scores))
+                baker_list_copy.remove(baker)
                 real_bakers.remove(real_baker)
+                return
 
             elif(len(baker_total_scores) == 2):
                 real_baker.second_place += 1
                 baker_total_scores.remove(max(baker_total_scores))
+                baker_list_copy.remove(baker)
                 real_bakers.remove(real_baker)
+                return
 
 
 def simulate_final_round():
@@ -163,7 +172,7 @@ def simulate_final_round():
 
     for i in range(2):
         remove_max_baker(real_bakers)
-    print(len(real_bakers))
+
     real_bakers[0].win_count += 1
 
 
@@ -187,6 +196,7 @@ def simulate():
 def get_data():
     global all_week_vals
     all_week_vals = [[], [], [], [], [], [], [], [], [], [], [], []]
+
     for i in range(0, 9):
         for baker in baker_list:
             all_week_vals[i].append(
