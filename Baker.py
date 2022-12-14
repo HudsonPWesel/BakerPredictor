@@ -12,10 +12,9 @@ class Baker:
         self.final_three = 0
         self.avg_week_eliminated = 0
         self.weeks_eliminated = {"Week 1": 0, "Week 2": 0, "Week 3": 0, "Week 4": 0, "Week 5": 0,
-                                 "Week 6": 0, "Week 7": 0, "Week 8": 0, "Week 9": 0}
+                                 "Week 6": 0, "Week 7": 0, "Week 8": 0, "Week 9": 0, "Week 10": 0}
         self.second_place = 0
         self.third_place = 0
-
 
         self.char = char            # char which is unique to the baker
         self.num_final_rounds = 0   # Amount of rounds in final (top 3)

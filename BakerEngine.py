@@ -1,16 +1,13 @@
 from typing import Any
 
 from Baker import Baker
-# import pandas as pd
-# from scipy.stats import norm
-# import matplotlib.pyplot as plt
 
 # For Data Formating
 import pandas as pd
 import numpy as np
-# weeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6",
-#          "Week 7", "Week 8", "Week 9", "Week 10", "Week 11", "Week 12", ]
 # Global Variables
+all_week_vals = [[], [], [], [], [], [], [], [], [], [], [], []]
+
 baker_wins = {"Baker 1": 0, "Baker 2": 0, "Baker 3": 0, "Baker 4": 0,
               "Baker 5": 0, "Baker 6": 0, "Baker 7": 0, "Baker 8": 0,
               "Baker 9": 0, "Baker 10": 0, "Baker 11": 0, "Baker 12": 0}
@@ -27,15 +24,21 @@ CHARS = ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
          'K', 'L')  # Bakers corresponding letter in order
 
 
-def set_wins(num_epochs: int):
-    for baker in baker_list:
-        # SET NUMBER OF WINS
-        # baker.name -> tuple (e.g) ('Baker 1',) --> Must index tuple
-        baker_wins[baker.name[0]] = baker.win_count
+def fill_char_arr():
+    """Fill list of chars determined by the weight of each baker"""
+    char_arr.clear()
+    for baker in baker_list_copy:
+        for i in range(baker.weight):
+            char_arr.append(baker.char)
 
-        # SET WIN PERCENTAGES
-        baker_win_percentages.append(
-            round((baker_wins[baker.name[0]] / num_epochs) * 100, 3))
+
+def main():
+    """Start of program...!"""
+    try:
+        i: int = int(input("Please enter the amount of trials to run: "))
+    except:
+        return
+    run(i)
 
 
 def fill_char_arr():
@@ -44,6 +47,12 @@ def fill_char_arr():
     for baker in baker_list_copy:
         for i in range(baker.weight):
             char_arr.append(baker.char)
+
+
+def reset_baker_scores():
+    for baker in baker_list_copy:
+        baker.cumulative_ranks.clear()
+        baker.cumulative_score = 0
 
 
 def set_baker_scores():
@@ -66,14 +75,6 @@ def set_baker_scores():
         assign_rank(chosen_char, i)
 
 
-def calc_scores():
-    for baker in baker_list_copy:
-        for score in baker.cumulative_ranks:
-            baker.cumulative_score += score
-        baker_total_scores.append(baker.cumulative_score)
-    # print(scores)
-
-
 def assign_rank(chosen_char, current_rank,):
     """Assign a rank to each baker in the baker Object"""
     for baker in baker_list_copy:
@@ -82,45 +83,11 @@ def assign_rank(chosen_char, current_rank,):
             baker.cumulative_ranks.append(current_rank)
 
 
-def find_range() -> int:
-    """Find the range of the bakers by adding up all the bakers weight"""
-    total = 0
+def calc_scores():
     for baker in baker_list_copy:
-        total += baker.weight
-    return total - 1
-
-
-def eliminate_baker(current_week):
-    # TODO: Problem: After the baker is eliminated, we cant use that baker to display in DF - EASY FIX!
-
-    for baker in baker_list_copy:
-        if baker.cumulative_score == max(baker_total_scores):
-            # print("FOUND: " + str(baker.name))
-            real_baker = get_baker(baker)
-            print(real_baker)
-            if real_baker is None:
-                pass
-            # print("FOUND REAL: " + str(real_baker.name))
-            real_baker.weeks_eliminated["Week " + (str(current_week + 1))] += 1
-            baker_list_copy.remove(baker)
-
-    # print(baker_list[0].weeks_eliminated)
-
-    # print("Remaining Bakers" + (str(len(baker_list_copy))))
-
-
-def get_baker(baker: Baker):
-    # print(baker)
-    for b in baker_list:
-        if b.name is baker.name:
-            return b
-    return None
-
-
-def reset_baker_scores():
-    for baker in baker_list_copy:
-        baker.cumulative_ranks.clear()
-        baker.cumulative_score = 0
+        for score in baker.cumulative_ranks:
+            baker.cumulative_score += score
+        baker_total_scores.append(baker.cumulative_score)
 
 
 def simulate_challenges():
@@ -131,46 +98,73 @@ def simulate_challenges():
         calc_scores()  # Calculate cumulative score
 
 
+def get_baker(baker: Baker):
+
+    for b in baker_list:
+        if b.name is baker.name:
+            return b
+    return None
+
+
+def eliminate_baker(current_week):
+    for baker in baker_list_copy:
+        # If the MAX is at certain POS then it will edit the list
+        if baker.cumulative_score == max(baker_total_scores):
+            real_baker = get_baker(baker)
+            if real_baker is None:
+                pass
+            real_baker.weeks_eliminated["Week " + (str(current_week + 1))] += 1
+            baker_list_copy.remove(baker)
+            return
+            # print("BAKER ELIMINATED")
+
+
 def simulate_round(week):
     simulate_challenges()  # Simulate 3 Challenges
+
     # Eliminate baker with max score of scores
     eliminate_baker(week)
+
+
+def set_real_baker(temp_baker, real_bakers):
+    for real_baker in real_bakers:
+        if(temp_baker.name is real_baker.name):
+            return real_baker
+
+
+def remove_max_baker(real_bakers):
     for baker in baker_list_copy:
-        baker.cumulative_score = 0
-        baker.cumulative_ranks = []
+        if baker.cumulative_score == max(baker_total_scores):
+            real_baker = set_real_baker(baker, real_bakers)
+            if(len(baker_total_scores) == 3):
+                real_baker.third_place += 1
+                baker_total_scores.remove(max(baker_total_scores))
+                real_bakers.remove(real_baker)
+
+            elif(len(baker_total_scores) == 2):
+                real_baker.second_place += 1
+                baker_total_scores.remove(max(baker_total_scores))
+                real_bakers.remove(real_baker)
 
 
 def simulate_final_round():
 
-    simulate_challenges()
-    third_place_baker = None
-    temp_baker_list_copy = baker_list_copy.copy()
-
-    print("CURRENT LENGTH: " + str(len(temp_baker_list_copy)))
-
-    # print(str(scores.clear()))
     for baker in baker_list_copy:
-        # Get real baker in our main list
-        real_baker = get_baker(baker)
+        baker.cumulative_score = 0
+        baker.cumulative_ranks = []
+    simulate_challenges()
+
+    real_bakers = []
+
+    for temp_baker in baker_list_copy:
+        real_baker = get_baker(temp_baker)
+        real_bakers.append(real_baker)
         real_baker.final_three += 1
 
-        if(len(baker_list_copy)) > 1:
-            if real_baker is None:
-                pass
-            # print(baker_total_scores)
-            if baker.cumulative_score == max(baker_total_scores):
-                # Is This Round For Third Place?
-                if(len(baker_list_copy)) > 2:
-                    real_baker.third_place += 1
-                    temp_baker_list_copy.remove(baker)
-                else:
-                    real_baker.second_place += 1
-                    temp_baker_list_copy.remove(baker)
-                    print(len(temp_baker_list_copy))
-
-        elif(len(temp_baker_list_copy)) == 1:
-            print(real_baker.name)
-            real_baker.win_count += 1
+    for i in range(2):
+        remove_max_baker(real_bakers)
+    print(len(real_bakers))
+    real_bakers[0].win_count += 1
 
 
 def simulate():
@@ -180,21 +174,14 @@ def simulate():
 
     # RUNS UP TO FINAL 3
     # todo DO WHAT IS NEEDED FOR FINAL THREE
+
     for week in range(9):
         # Runs three times to simulate the three challenges each week
         reset_baker_scores()  # Reset cumulative ranks
         simulate_round(week)
-
     simulate_final_round()
 
-    # print("OIEUFWHOIEHJFOIJEWFOIFJE")
-    # print(scores)
-
-    # print(scores)
-
     # week 1 11 | 2 10 | 3 9 | 4 8 | 5 7 | 6 6 | 7 5 | 8 4 | 9 3 | 10
-
-    # baker_list_copy[0].win_count += 1
 
 
 def get_data():
@@ -221,12 +208,6 @@ def display_DataFrame():
 
     for week in range(12):
         get_data()
-    # {"Bakers": list(baker_wins.keys()),
-    # Number of wins per bakers
-    # "Wins": list(baker_wins.values()),
-    # Avg week baker is eliminated
-    #   Weeks Eliminated
-
     print(
         pd.DataFrame({
                      "Weights": list(BAKER_WEIGHTS),
@@ -250,13 +231,17 @@ def display_DataFrame():
     )
 
 
-def main():
-    """Start of program...!"""
-    try:
-        i: int = int(input("Please enter the amount of trials to run: "))
-    except:
-        return
-    run(i)
+def set_wins(num_epochs: int):
+    for baker in baker_list:
+        # SET NUMBER OF WINS
+        # baker.name -> tuple (e.g) ('Baker 1',) --> Must index tuple
+        # print(baker.name[0] + ": " + str(baker.win_count))
+        baker_wins[baker.name[0]] = baker.win_count
+
+        # SET WIN PERCENTAGES
+        baker_win_percentages.append(
+            round((baker_wins[baker.name[0]] / num_epochs) * 100, 3))
+        # print(baker_wins)
 
 
 def run(epochs: int):
@@ -267,14 +252,12 @@ def run(epochs: int):
         baker_list.append(
             Baker(BAKER_WEIGHTS[i], ("Baker " + str(i + 1), ), CHARS[i]))
 
-    # Run each Simulation
     for i in range(1, epochs+1):
+        simulate()
         # % Program Finished
         print(str(i) + " | " + "{:.2f}".format((i/epochs)*100) + "%")
         # Run one simulation (Saves output globally)
-        simulate()
     set_wins(epochs)
-
     # Display data for all the simulations
     display_DataFrame()
 
